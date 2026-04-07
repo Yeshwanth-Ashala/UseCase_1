@@ -1,7 +1,7 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox,simpledialog
 from tracker import add_expense
-
+from analytics import show_summary, pie_chart, monthly_summary
 
 root=tk.Tk()
 root.title("Smart Expense Tracker ")
@@ -38,6 +38,23 @@ def submit_expense_data():
     category_entry.delete(0, tk.END)
     amount_entry.delete(0, tk.END)
     description_entry.delete(0, tk.END)
-save_button = tk.Button(root, text="Save Expense", command=submit_expense_data)
+
+def view_total_summary():
+    status=show_summary()
+    if status == "No expenses recorded yet.":
+        messagebox.showinfo("Result", status)
+        return
+    pie_chart()
+
+def monthly_analysis():
+    target_month=simpledialog.askstring("Month Selection", "Enter month to view (YYYY-MM):")
+    if target_month:
+        result=monthly_summary(target_month)
+        messagebox.showinfo("Monthly Summary", result)
+monthly_btn=tk.Button(root,text="View Monthly Summary",command=monthly_analysis)
+monthly_btn.pack(pady=10)
+all_time_btn=tk.Button(root,text="View All-Time Chart",command=view_total_summary)
+all_time_btn.pack(pady=10)
+save_button=tk.Button(root,text="Save Expense",command=submit_expense_data)
 save_button.pack(pady=20)
 root.mainloop()

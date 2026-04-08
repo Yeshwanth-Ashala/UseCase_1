@@ -20,7 +20,7 @@ create table Orders(
 create table Order_items(
     orders_id int references Orders(orders_id),
     product_id int references Products(product_id),
-    quantity int
+    quantity int,
     primary key (orders_id,product_id)
 );
 
@@ -32,8 +32,8 @@ create table Order_items(
 select p.product_id as id,p.name as product_name,p.category as product_category,p.price as product_price,sum(o.quantity) as quantity_sold
 from Products p right join Order_items o
 on p.product_id=o.product_id
-group by p.product_id
-order by quantity_sold desc
+group by p.product_id,p.name,p.category,p.price
+order by quantity_sold desc;
 
 --identifing most valuable customers
 
@@ -44,18 +44,18 @@ right join Order_items oi
 on o.orders_id=oi.orders_id
 left join Products p
 on oi.product_id=p.product_id
-group by c.customer_id
-order by amount_paid desc
+group by c.customer_id,c.name,c.city
+order by amount_paid desc;
 
 
 --Monthly revenue calculation
 
-select date_format(o.order_date,'%Y-%m') as month, sum(p.price*oi.quantity) as monthly_earnings
+select to_char(o.order_date, 'YYYY-MM') as month, sum(p.price*oi.quantity) as monthly_earnings
 from Orders o join Order_items oi
 on o.orders_id=oi.orders_id
 left join Products p
 on oi.product_id=p.product_id
-group by date_format(o.order_date,'%Y-%m')
+group by to_char(o.order_date, 'YYYY-MM');
 
 
 --category-wise sales analysis
